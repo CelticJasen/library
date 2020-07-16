@@ -1,22 +1,45 @@
 let myLibrary = [];
 let bookCount = 1;
 
-function book(count, title, author, pages, read){
-    this.uniqueid = count;
-    this.title = title;
-    this.author = author;
-    this.pages = pages;
-    this.read = read;
-    function info(){
-        let readString = "";
+class Book {
+    constructor(count, title, author, pages, read){
+        this.uniqueid = count;
+        this.title = title;
+        this.author = author;
+        this.pages = pages;
+        this.read = read;
+    }
 
-        if(this.read){
-            readString = "has been read";
-        }else{
-            readString = "not read yet";
-        }
+    get read(){
+        return this._read;
+    }
+    get author(){
+        return this._author;
+    }
+    get pages(){
+        return this._pages;
+    }
+    get title(){
+        return this._title;
+    }
+    get readString(){
+        return this._readString;
+    }
 
-        return `${this.title} by ${this.author}, ${this.pages} pages, ${readString}`;
+    set read(value){
+        this._read = value;
+    }
+    set title(value){
+        this._title = value;
+    }
+    set author(value){
+        this._author = value;
+    }
+    set pages(value){
+        this._pages = value;
+    }
+    set readString(value){
+        this._readString = value;
     }
 }
 
@@ -31,7 +54,7 @@ function addBookToLibrary(){
     let pages = document.getElementsByName("pages")[0].value;
     let read = document.getElementsByName("read")[0].checked;
 
-    myLibrary[myLibrary.length] = new book(bookCount, title, author, pages, read);
+    myLibrary[myLibrary.length] = new Book(bookCount, title, author, pages, read);
 
     bookCount++;
 
@@ -49,7 +72,6 @@ function displayBooks(){
 
     let bookDisplay = document.getElementById("bookDisplay");
     let table = document.createElement("table");
-    table.id = "bookTable";
     let tableHeadRow = document.createElement("tr");
     let tableHeadUniqueId = document.createElement("th");
     let tableHeadTitle = document.createElement("th");
@@ -57,6 +79,7 @@ function displayBooks(){
     let tableHeadPages = document.createElement("th");
     let tableHeadRead = document.createElement("th");
 
+    table.id = "bookTable";
     tableHeadUniqueId.textContent = "ID";
     tableHeadTitle.textContent = "Title";
     tableHeadAuthor.textContent = "Author";
@@ -79,13 +102,7 @@ function displayBooks(){
         let tablePages = document.createElement("td");
         let tableRead = document.createElement("td");
         let deleteButton = document.createElement("button");
-        deleteButton.innerText = "Delete this entry";
-        deleteButton.id = myLibrary[i].uniqueid;
-        deleteButton.onclick = function(){deleteEntry(this.id);};
         let toggleButton = document.createElement("button");
-        toggleButton.innerText = "Toggle read status";
-        toggleButton.id = myLibrary[i].uniqueid;
-        toggleButton.onclick = function(){toggleRead(this.id);};
 
         tableUniqueId.textContent = myLibrary[i].uniqueid;
         tableTitle.textContent = myLibrary[i].title;
@@ -97,6 +114,13 @@ function displayBooks(){
         }else{
             tableRead.textContent = "Unread";
         }
+
+        deleteButton.innerText = "Delete this entry";
+        deleteButton.id = myLibrary[i].uniqueid;
+        deleteButton.onclick = function(){deleteEntry(this.id);};
+        toggleButton.innerText = "Toggle read status";
+        toggleButton.id = myLibrary[i].uniqueid;
+        toggleButton.onclick = function(){toggleRead(this.id);};
 
         tableRow.appendChild(tableUniqueId);
         tableRow.appendChild(tableTitle);
@@ -113,17 +137,19 @@ function displayBooks(){
 }
 
 function deleteEntry(id){
-    myLibrary = myLibrary.filter(book => book.uniqueid !== Number(id));
+    myLibrary = myLibrary.filter(Book => Book.uniqueid !== Number(id));
 
     displayBooks();
 }
 
 function toggleRead(id){
-    for(i = 0; i < myLibrary.length; i++){
-        if(myLibrary[i].uniqueid === Number(id)){
-            myLibrary[i].read = !myLibrary[i].read;
+    myLibrary = myLibrary.map(x => {
+        if(x.uniqueid === Number(id)){
+            x.read = !x.read;
         }
-    }
+        
+        return x;
+    });
 
     displayBooks();
 }
