@@ -18,13 +18,66 @@ function removeBookFromLibrary(index){
   myLibrary.splice(index, 1);
 }
 
-function displayBookCollection(){
+function displayBookCollection(booksArray){
+  if(document.querySelectorAll('.card')){
+    const cards = document.querySelectorAll('.card');
+    cards.forEach(function(element){
+      element.remove();
+    });
+  }
 
+  const container = document.getElementById("bookContainer");
+
+  booksArray.forEach(book => {
+    const card = document.createElement('div');
+    card.classList.add('card');
+
+    const title = document.createElement('h2');
+    title.textContent = `Title: ${book.title}`;
+
+    const author = document.createElement('p');
+    author.textContent = `Author: ${book.author}`;
+
+    const pages = document.createElement('p');
+    pages.textContent = `Pages: ${book.pages}`;
+
+    const readStatus = document.createElement('p');
+    readStatus.textContent = `Read Status: ${book.readStatus ? 'Read' : 'Not Read'}`;
+
+    const toggleButton = document.createElement('button');
+    toggleButton.textContent = 'Toggle Read Status';
+    toggleButton.addEventListener('click', () => {
+      book.changeStatus();
+      readStatus.textContent = `Read Status: ${book.readStatus ? 'Read' : 'Not Read'}`;
+    });
+
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Delete';
+    deleteButton.addEventListener('click', () => {
+      const bookIndex = booksArray.indexOf(book);
+      if(bookIndex !== -1){
+        booksArray.splice(bookIndex, 1);
+      }
+
+      card.remove();
+    });
+
+    card.appendChild(title);
+    card.appendChild(author);
+    card.appendChild(pages);
+    card.appendChild(readStatus);
+    card.appendChild(toggleButton);
+    card.appendChild(deleteButton);
+
+    container.appendChild(card);
+  });
 }
 
 function toggleForm(){
   if(document.getElementById("bookForm")){
     document.getElementById("bookForm").remove();
+    document.getElementById("overlay").style.width = "0%";
+    document.getElementById("overlay").style.height = "0%"
     return;
   }
 
@@ -102,4 +155,5 @@ function processForm(){
   overlay.style.height = "0%";
   addBookToLibrary(newBook);
   document.getElementById("bookForm").remove();
+  displayBookCollection(myLibrary);
 }
