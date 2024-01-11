@@ -1,36 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="style.css">
-    <title>Document</title>
-</head>
-<body>
-    <div id="bookDisplay">
-
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>My Library</title>
+    <script src="objects.js"></script>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <div class="buttonContainer">
+      <button id="addButton" onclick="toggleForm()">Add a New Book</button>
     </div>
-
-    <div class="form-popup" id="addBookForm">
-        <form action="objects.js" class="form-container" id="bookForm">
-          <label for="title"><b>Book Title</b></label>
-          <input type="text" placeholder="Enter Title" name="title" required>
-      
-          <label for="author"><b>Author</b></label>
-          <input type="text" placeholder="Enter author name" name="author" required>
-
-          <label for="pages"><b>Pages</b></label>
-          <input type="text" placeholder="Enter the number of pages" name="pages" required>
-
-          <label for="read"><b>Read Status</b></label>
-          <input type="radio" id="read" name="read">
-      
-          <button type="button" class="btn" id="addBook">Add Book</button>
-          <button type="button" class="btn cancel" id="closeButton">Close</button>
-        </form>
-    </div>
-    <button id="displayForm" class="btn">Add a Book</button>
-    <button id="displayBooks">Display Collection</button>
-</body>
-<script type="text/javascript" src="objects.js"></script>
+    <div id="overlay"></div>
+  </body>
 </html>

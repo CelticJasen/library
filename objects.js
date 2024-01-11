@@ -1,168 +1,105 @@
-let myLibrary = [];
-let bookCount = 1;
+const myLibrary = [];
 
-class Book {
-    constructor(count, title, author, pages, read){
-        this.uniqueid = count;
-        this.title = title;
-        this.author = author;
-        this.pages = pages;
-        this.read = read;
-    }
-
-    get read(){
-        return this._read;
-    }
-    get author(){
-        return this._author;
-    }
-    get pages(){
-        return this._pages;
-    }
-    get title(){
-        return this._title;
-    }
-    get readString(){
-        return this._readString;
-    }
-
-    set read(value){
-        this._read = value;
-    }
-    set title(value){
-        this._title = value;
-    }
-    set author(value){
-        this._author = value;
-    }
-    set pages(value){
-        this._pages = value;
-    }
-    set readString(value){
-        this._readString = value;
-    }
+function Book(title, author, pages, readStatus){
+  this.title = title;
+  this.author = author;
+  this.pages = pages;
+  this.readStatus = readStatus;
+  this.changeStatus = function(){
+    this.readStatus = !this.readStatus;
+  };
 }
 
-function addBookToLibrary(){
-    if(document.getElementsByName("title")[0].value == 0 || document.getElementsByName("author")[0].value == 0 || document.getElementsByName("pages")[0].value == 0){
-        alert("Something's missing...");
-        return;
+function addBookToLibrary(newBook){
+  myLibrary.push(newBook);
+}
+
+function removeBookFromLibrary(index){
+  myLibrary.splice(index, 1);
+}
+
+function displayBookCollection(){
+
+}
+
+function toggleForm(){
+  if(document.getElementById("bookForm")){
+    document.getElementById("bookForm").remove();
+    return;
+  }
+
+  const form = document.createElement("form");
+  const overlay = document.getElementById("overlay");
+  form.id = "bookForm";
+
+  overlay.style.width = "100%";
+  overlay.style.height = "100%";
+
+  // Array of field details
+  let fields = [
+    { label: "Title", type: "text", id: "title", name: "title", required: true },
+    { label: "Author", type: "text", id: "author", name: "author", required: true },
+    { label: "Pages", type: "number", id: "pages", name: "pages", required: true },
+    { label: "Read/Not Read", type: "select", id: "readStatus", name: "readStatus", required: true, options: ["Read", "Not Read"] }
+  ];
+
+  // Loop through the fields array and create corresponding elements
+  fields.forEach(function (field) {
+    let label = document.createElement("label");
+    label.htmlFor = field.id;
+    label.textContent = field.label + ":";
+
+    let input;
+    if (field.type === "select") {
+      input = document.createElement("select");
+      input.id = field.id;
+      input.name = field.name;
+      input.required = field.required;
+
+      // Create options for select field
+      field.options.forEach(function (optionText) {
+        let option = document.createElement("option");
+        option.value = optionText.toLowerCase().replace(" ", "");
+        option.textContent = optionText;
+        input.appendChild(option);
+      });
+    } else {
+      input = document.createElement("input");
+      input.type = field.type;
+      input.id = field.id;
+      input.name = field.name;
+      input.required = field.required;
     }
 
-    let title = document.getElementsByName("title")[0].value;
-    let author = document.getElementsByName("author")[0].value;
-    let pages = document.getElementsByName("pages")[0].value;
-    let read = document.getElementsByName("read")[0].checked;
+    // Append label and input to the form
+    form.appendChild(label);
+    form.appendChild(input);
+    form.appendChild(document.createElement("br"));
+  });
 
-    myLibrary[myLibrary.length] = new Book(bookCount, title, author, pages, read);
+  // Create a submit button
+  let submitButton = document.createElement("input");
+  submitButton.type = "button";
+  submitButton.value = "Submit";
+  submitButton.onclick = processForm;
 
-    bookCount++;
+  // Append the submit button to the form
+  form.appendChild(submitButton);
 
-    clearForm();
+  // Append the form to the body
+  overlay.appendChild(form);
 }
 
-function clearForm(){
-    document.getElementById("bookForm").reset();
+function processForm(){
+  const title = document.getElementById('title').value;
+  const author = document.getElementById('author').value;
+  const pages = document.getElementById('pages').value;
+  const readStatus = document.getElementById('readStatus').value;
+  const overlay = document.getElementById("overlay");
+
+  const newBook = new Book(title, author, pages, readStatus);
+  overlay.style.width = "0%";
+  overlay.style.height = "0%";
+  addBookToLibrary(newBook);
+  document.getElementById("bookForm").remove();
 }
-
-function displayBooks(){
-    if(document.getElementById("bookTable")){
-        document.getElementById("bookTable").parentNode.removeChild(document.getElementById("bookTable"));
-    }
-
-    let bookDisplay = document.getElementById("bookDisplay");
-    let table = document.createElement("table");
-    let tableHeadRow = document.createElement("tr");
-    let tableHeadUniqueId = document.createElement("th");
-    let tableHeadTitle = document.createElement("th");
-    let tableHeadAuthor = document.createElement("th");
-    let tableHeadPages = document.createElement("th");
-    let tableHeadRead = document.createElement("th");
-
-    table.id = "bookTable";
-    tableHeadUniqueId.textContent = "ID";
-    tableHeadTitle.textContent = "Title";
-    tableHeadAuthor.textContent = "Author";
-    tableHeadPages.textContent = "Pages";
-    tableHeadRead.textContent = "Read";
-
-    tableHeadRow.appendChild(tableHeadUniqueId);
-    tableHeadRow.appendChild(tableHeadTitle);
-    tableHeadRow.appendChild(tableHeadAuthor);
-    tableHeadRow.appendChild(tableHeadPages);
-    tableHeadRow.appendChild(tableHeadRead);
-
-    table.appendChild(tableHeadRow);
-
-    for(i = 0; i < myLibrary.length; i++){
-        let tableRow = document.createElement("tr");
-        let tableUniqueId = document.createElement("td");
-        let tableTitle = document.createElement("td");
-        let tableAuthor = document.createElement("td");
-        let tablePages = document.createElement("td");
-        let tableRead = document.createElement("td");
-        let deleteButton = document.createElement("button");
-        let toggleButton = document.createElement("button");
-
-        tableUniqueId.textContent = myLibrary[i].uniqueid;
-        tableTitle.textContent = myLibrary[i].title;
-        tableAuthor.textContent = myLibrary[i].author;
-        tablePages.textContent = myLibrary[i].pages;
-
-        if(myLibrary[i].read){
-            tableRead.textContent = "Read";
-        }else{
-            tableRead.textContent = "Unread";
-        }
-
-        deleteButton.innerText = "Delete this entry";
-        deleteButton.id = myLibrary[i].uniqueid;
-        deleteButton.onclick = function(){deleteEntry(this.id);};
-        toggleButton.innerText = "Toggle read status";
-        toggleButton.id = myLibrary[i].uniqueid;
-        toggleButton.onclick = function(){toggleRead(this.id);};
-
-        tableRow.appendChild(tableUniqueId);
-        tableRow.appendChild(tableTitle);
-        tableRow.appendChild(tableAuthor);
-        tableRow.appendChild(tablePages);
-        tableRow.appendChild(tableRead);
-        tableRow.appendChild(toggleButton);
-        tableRow.appendChild(deleteButton);
-
-        table.appendChild(tableRow);
-    }
-
-    bookDisplay.appendChild(table);
-}
-
-function deleteEntry(id){
-    myLibrary = myLibrary.filter(Book => Book.uniqueid !== Number(id));
-
-    displayBooks();
-}
-
-function toggleRead(id){
-    myLibrary = myLibrary.map(x => {
-        if(x.uniqueid === Number(id)){
-            x.read = !x.read;
-        }
-        
-        return x;
-    });
-
-    displayBooks();
-}
-
-function openForm(){
-    document.getElementById("addBookForm").style.display = "block";
-}
-
-function closeForm(){
-    document.getElementById("addBookForm").style.display = "none";
-}
-
-document.getElementById("displayForm").addEventListener("click", openForm);
-document.getElementById("closeButton").addEventListener("click", closeForm);
-document.getElementById("displayBooks").addEventListener("click", displayBooks);
-document.getElementById("addBook").addEventListener("click", addBookToLibrary);
